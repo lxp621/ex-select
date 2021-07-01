@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "keywords": [
+    "vue",
+    "vuejs",
+    "rollup",
+    "vue-virtual-scroller",
+    "element-ui"
+  ],
   "scripts": {
     "docs": "vuepress dev docs",
     "docs:build": "vuepress build docs",
