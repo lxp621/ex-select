@@ -189,9 +189,8 @@
 
     computed: {
       filterNodes () { // 经搜索词过滤后的node节点
-        if (!this.searchKey) return this.originOptions
+        if (!this.searchKey || this.remote) return this.originOptions
         return this.originOptions.filter(node => node.label.includes(this.searchKey))
-        // return [...this.originOptions]
       },
       _elFormItemSize() {
         return (this.elFormItem || {}).elFormItemSize;
@@ -444,7 +443,6 @@
                 this.broadcast('ExOption', 'queryChange', '');
                 this.broadcast('ExOptionGroup', 'queryChange');
               }
-              console.log(111, this.selectedLabel);
               if (this.selectedLabel) {
                 this.currentPlaceholder = this.selectedLabel;
                 this.selectedLabel = '';
@@ -453,7 +451,6 @@
           }
         }
         this.$emit('visible-change', val);
-        console.log(222, this.selectedLabel);
       },
 
       options() {
@@ -471,6 +468,9 @@
         if (this.defaultFirstOption && (this.filterable || this.remote) && this.filteredOptionsCount) {
           this.checkDefaultFirstOption();
         }
+      },
+      originOptions () {
+        this.initOption()
       }
     },
     methods: {
@@ -571,7 +571,6 @@
       },
 
       setSelected() {
-        console.log(999, this.query, this.selectedLabel)
         if (!this.multiple) {
           let option = this.getOption(this.value);
           if (option.created) {
@@ -872,17 +871,17 @@
       },
       handleSearchInput (searchWords = '') {
         this.searchKey = searchWords
-        this.setVisibleOpt()
       },
-      setVisibleOpt () {
+      initOption () {
+        this.options = this.originOptions.map(item => ({ ...item, currentLabel: item.label, currentValue: item.value }))
+        this.cachedOptions = [...this.options]
+        this.optionsCount = this.options.length
+        this.filteredOptionsCount = this.options.length
       }
     },
 
     created() {
-      this.options = this.originOptions.map(item => ({ ...item, currentLabel: item.label, currentValue: item.value }))
-      this.cachedOptions = [...this.options]
-      this.optionsCount = this.options.length
-      this.filteredOptionsCount = this.options.length
+      this.initOption()
       this.cachedPlaceHolder = this.currentPlaceholder = this.propPlaceholder;
       if (this.multiple && !Array.isArray(this.value)) {
         this.$emit('input', []);
@@ -896,7 +895,9 @@
       });
 
       this.debouncedQueryChange = debounce(this.debounce, (e) => {
-        this.handleQueryChange(e.target.value);
+        const sKey = e.target.value
+        this.searchKey = sKey
+        this.handleQueryChange(sKey);
       });
 
       this.$on('handleOptionClick', this.handleOptionSelect);

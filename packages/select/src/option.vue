@@ -84,7 +84,6 @@
 
     watch: {
       currentLabel() {
-        console.log('nnn=', !this.select.searchKey)
         if (!this.created && !this.select.remote && !this.select.searchKey) this.dispatch('ExSelect', 'setSelected');
       },
       value(val, oldVal) {
@@ -93,7 +92,6 @@
           if (valueKey && typeof val === 'object' && typeof oldVal === 'object' && val[valueKey] === oldVal[valueKey]) {
             return;
           }
-          console.log('mmm=', !this.select.searchKey)
           this.dispatch('ExSelect', 'setSelected');
         }
       }
